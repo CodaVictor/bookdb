@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,28 +31,23 @@ public class BookController {
     private final ReviewService reviewService;
 
     @GetMapping("")
-    public ResponseEntity<List<BookResponseDtoV1>> findAll(@RequestParam Integer page, @RequestParam Integer pageSize, @RequestBody @Validated BookParameters parameters) {
+    public ResponseEntity<List<BookResponseDtoV1>> findAll(
+            @RequestParam(required = false) @Min(1) @Max(Integer.MAX_VALUE) Integer page,
+            @RequestParam(required = false) @Min(1) @Max(512) Integer pageSize,
+            @RequestBody(required = false) @Validated BookParameters parameters) {
         Sort.Direction direction = null;
         String orderBy = null;
         Specification<Book> specification = Specification.where(null);
-        int currentPage = DefaultValues.DEFAULT_PAGE;
-        int currentPageSize = DefaultValues.BOOK_DEFAULT_PAGE_SIZE;
+        Integer currentPage = DefaultValues.DEFAULT_PAGE;
+        Integer currentPageSize = DefaultValues.BOOK_DEFAULT_PAGE_SIZE;
         List<Book> result;
 
         if(page != null && pageSize != null) {
-            currentPage = page;
+            currentPage = page - 1;
             currentPageSize = pageSize;
         }
 
         if(parameters != null) {
-            if(parameters.getPage() != null) {
-                currentPage = parameters.getPage() - 1;
-            }
-
-            if(parameters.getPageSize() != null) {
-                currentPageSize = parameters.getPageSize();
-            }
-
             // Sort direction (ASC/DESC)
             if(parameters.getOrderParameter() != null) {
                 if (parameters.getOrderParameter().equalsIgnoreCase("ASC")) {

@@ -14,10 +14,11 @@ public interface ReviewRepository extends PagingAndSortingRepository<Review, Lon
 
     List<Review> findAllByBookId(final Long id);
 
-    //@Query("SELECT COUNT(*) FROM Review WHERE book_id = ?1")
+
     // Gets review count of the book with specified id
+    @Query("SELECT COUNT(*) FROM Review WHERE book_id = ?1")
     long countAllByBookId(final Long id);
 
-    @Query("SELECT AVG(rating) FROM Review WHERE book_Id = bookId")
-    Long getReviewAvgRatingByBookId(@Param("bookId") final Long id);
+    @Query("SELECT AVG(rating) FROM Review WHERE book_Id = ?1")
+    Long getReviewAvgRatingByBookId(final Long id);
 }

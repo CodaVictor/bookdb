@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Value;
 
 import javax.validation.constraints.*;
 
@@ -12,8 +13,8 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookParameters {
-    private Integer page;
-    private Integer pageSize;
+
+    @Pattern(regexp = "asc|desc", message = "The value must be 'asc' or 'desc'")
     private String orderBy;
     private String orderParameter;
     private List<Long> category;

@@ -4,6 +4,7 @@ import cz.upce.fei.bookdb_backend.domain.Book;
 import cz.upce.fei.bookdb_backend.domain.Review;
 import cz.upce.fei.bookdb_backend.repository.ReviewRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public long getAvgRatingOfBook(final Long bookId) {
+    public Long getAvgRatingOfBook(final Long bookId) {
         return reviewRepository.getReviewAvgRatingByBookId(bookId);
     }
 
