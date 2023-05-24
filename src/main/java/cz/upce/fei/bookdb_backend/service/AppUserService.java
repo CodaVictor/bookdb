@@ -65,10 +65,10 @@ public class AppUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser user = appUserRepository.findByEmail(username);
         if(user == null) {
-            log.error("User not found in database.");
+            log.error("User not found in the database.");
             throw new UsernameNotFoundException("User not found in database.");
         } else {
-            log.info("User found in database.");
+            log.info("User found in the database.");
         }
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();

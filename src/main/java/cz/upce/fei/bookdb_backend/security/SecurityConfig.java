@@ -44,6 +44,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(GET, ServerPaths.USERS_PATH).hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(POST, ServerPaths.USER_PATH + "/save/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(POST, ServerPaths.ROLE_PATH + "/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(POST, ServerPaths.BOOK_PATH + "/save/**").hasAnyAuthority("ROLE_EDITOR");
+        http.authorizeRequests().antMatchers(POST, ServerPaths.REVIEW_PATH + "/save/**").hasAnyAuthority("ROLE_USER");
         //http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -1,30 +1,49 @@
 package cz.upce.fei.bookdb_backend.service;
 
+import cz.upce.fei.bookdb_backend.domain.Category;
 import cz.upce.fei.bookdb_backend.domain.Publisher;
 import cz.upce.fei.bookdb_backend.domain.Review;
+import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.repository.PublisherRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Transactional
+@Slf4j
 public class PublisherService {
 
-    private PublisherRepository publisherRepository;
+    private final PublisherRepository publisherRepository;
 
-    @Transactional
-    public Publisher create(final Publisher publisher) {
+    @Transactional(readOnly = true)
+    public Publisher findById(final Long id) throws ResourceNotFoundException {
+        Optional<Publisher> result = publisherRepository.findById(id);
+
+        if (result.isEmpty()) {
+            throw new ResourceNotFoundException();
+        }
+
+        return result.get();
+    }
+
+    public Publisher savePublisher(final Publisher publisher) {
+        log.info("Saving new publisher '{}' to the database.", publisher.getName());
         return publisherRepository.save(publisher);
     }
 
-    @Transactional
-    public Publisher update(final Publisher toEntity) {
-        return publisherRepository.save(toEntity);
+    public Publisher updatePublisher(final Publisher publisher) {
+        log.info("Saving updated publisher '{}' to the database.", publisher.getName());
+        return publisherRepository.save(publisher);
     }
 
-    @Transactional
-    public void delete(final Long id) {
+    public void deletePublisher(final Long id) {
+        log.info("Deleting publisher with id {}.", id);
         publisherRepository.deleteById(id);
     }
 }

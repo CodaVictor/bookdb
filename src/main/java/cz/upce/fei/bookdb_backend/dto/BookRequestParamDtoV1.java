@@ -1,18 +1,17 @@
-package cz.upce.fei.bookdb_backend.filter;
+package cz.upce.fei.bookdb_backend.dto;
 
 import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 import javax.validation.constraints.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookParameters {
+public class BookRequestParamDtoV1 {
 
     @Pattern(regexp = "asc|desc", message = "The value must be 'asc' or 'desc'")
     private String orderBy;

@@ -1,6 +1,7 @@
 package cz.upce.fei.bookdb_backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Review {
 
@@ -26,7 +28,6 @@ public class Review {
     @Column(nullable = false)
     private LocalDateTime creationDateTime;
 
-    // Reviews (appuser-book) M:N
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
