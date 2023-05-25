@@ -1,13 +1,10 @@
 package cz.upce.fei.bookdb_backend.controller;
 
 import cz.upce.fei.bookdb_backend.domain.*;
-import cz.upce.fei.bookdb_backend.dto.BookRequestDtoV1;
-import cz.upce.fei.bookdb_backend.dto.ReviewRequestDtoV1;
+import cz.upce.fei.bookdb_backend.dto.*;
 import cz.upce.fei.bookdb_backend.service.*;
 import cz.upce.fei.bookdb_backend.values.DefaultValues;
 import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
-import cz.upce.fei.bookdb_backend.dto.BookRequestParamDtoV1;
-import cz.upce.fei.bookdb_backend.dto.BookResponseDtoV1;
 import cz.upce.fei.bookdb_backend.repository.specification.BookSpecification;
 
 import lombok.RequiredArgsConstructor;
@@ -140,94 +137,87 @@ public class BookController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createBook(@RequestBody @Validated BookRequestDtoV1 bookDto) {
-        try {
-            Category category = null;
-            if(bookDto.getCategory() != null) {
-                category = categoryService.findById(bookDto.getCategory()).orElseThrow(ResourceNotFoundException::new);
-            }
-
-            Publisher publisher = null;
-            if(bookDto.getPublisher() != null) {
-                publisher = publisherService.findById(bookDto.getPublisher()).orElseThrow(ResourceNotFoundException::new);
-            }
-
-            Genre genre = null;
-            if(bookDto.getGenre() != null) {
-                genre = genreService.findById(bookDto.getGenre()).orElseThrow(ResourceNotFoundException::new);
-            }
-
-            List<Author> authors = null;
-            if(bookDto.getAuthors() != null) {
-                authors = bookDto.getAuthors().stream()
-                    .map(authorService::findById)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toList());
-            }
-
-            Book book = new Book(
-                null, bookDto.getTitle(), bookDto.getSubtitle(), bookDto.getIsbn(), bookDto.getLanguage(),
-                bookDto.getPublicationDate(), bookDto.getPageCount(),bookDto.getDescription(), bookDto.getFilename(),
-                null, publisher, authors, category, genre);
-
-            URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("").toUriString());
-            return ResponseEntity.created(uri).body(book.toDto());
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("Failed to create book");
+    public ResponseEntity<BookResponseDtoV1> createBook(@RequestBody @Validated BookRequestDtoV1 bookDto) throws ResourceNotFoundException {
+        Category category = null;
+        if(bookDto.getCategory() != null) {
+            category = categoryService.findById(bookDto.getCategory()).orElseThrow(ResourceNotFoundException::new);
         }
+
+        Publisher publisher = null;
+        if(bookDto.getPublisher() != null) {
+            publisher = publisherService.findById(bookDto.getPublisher()).orElseThrow(ResourceNotFoundException::new);
+        }
+
+        Genre genre = null;
+        if(bookDto.getGenre() != null) {
+            genre = genreService.findById(bookDto.getGenre()).orElseThrow(ResourceNotFoundException::new);
+        }
+
+        List<Author> authors = null;
+        if(bookDto.getAuthors() != null) {
+            authors = bookDto.getAuthors().stream()
+                .map(authorService::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        }
+
+        Book book = new Book(
+            null, bookDto.getTitle(), bookDto.getSubtitle(), bookDto.getIsbn(), bookDto.getLanguage(),
+            bookDto.getPublicationDate(), bookDto.getPageCount(),bookDto.getDescription(), bookDto.getFilename(),
+            null, publisher, authors, category, genre);
+
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("").toUriString());
+        return ResponseEntity.created(uri).body(book.toDto());
+
     }
 
     @PutMapping("{bookId}")
-    public ResponseEntity<?> updateBook(@PathVariable Long bookId, @RequestBody @Validated BookRequestDtoV1 bookDto) {
+    public ResponseEntity<BookResponseDtoV1> updateBook(@PathVariable Long bookId, @RequestBody @Validated BookRequestDtoV1 bookDto) throws ResourceNotFoundException {
         Optional<Book> book = bookService.findById(bookId);
         if(book.isPresent()) {
-            try {
-                Book existingBook = book.get();
+            Book existingBook = book.get();
 
-                // Update data
-                existingBook.setTitle(bookDto.getTitle());
-                existingBook.setSubtitle(bookDto.getSubtitle());
-                existingBook.setPageCount(bookDto.getPageCount());
-                existingBook.setLanguage(bookDto.getLanguage());
-                existingBook.setIsbn(bookDto.getIsbn());
-                existingBook.setPublicationDate(bookDto.getPublicationDate());
-                existingBook.setDescription(bookDto.getDescription());
-                existingBook.setFilename(bookDto.getFilename());
+            // Update data
+            existingBook.setTitle(bookDto.getTitle());
+            existingBook.setSubtitle(bookDto.getSubtitle());
+            existingBook.setPageCount(bookDto.getPageCount());
+            existingBook.setLanguage(bookDto.getLanguage());
+            existingBook.setIsbn(bookDto.getIsbn());
+            existingBook.setPublicationDate(bookDto.getPublicationDate());
+            existingBook.setDescription(bookDto.getDescription());
+            existingBook.setFilename(bookDto.getFilename());
 
-                // Update category
-                if(bookDto.getCategory() != null) {
-                    Category category = categoryService.findById(bookDto.getCategory()).orElseThrow(ResourceNotFoundException::new);
-                    existingBook.setCategory(category);
-                }
-
-                // Update publisher
-                if(bookDto.getPublisher() != null) {
-                    Publisher publisher = publisherService.findById(bookDto.getPublisher()).orElseThrow(ResourceNotFoundException::new);
-                    existingBook.setPublisher(publisher);
-                }
-
-                // Update genre
-                if(bookDto.getGenre() != null) {
-                    Genre genre = genreService.findById(bookDto.getGenre()).orElseThrow(ResourceNotFoundException::new);
-                    existingBook.setGenre(genre);
-                }
-
-                // Update authors
-                if(bookDto.getAuthors() != null) {
-                    List<Author> authors = bookDto.getAuthors().stream()
-                            .map(authorService::findById)
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .toList();
-                    existingBook.setAuthors(authors);
-                }
-
-                URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path(String.format("{%d}", bookId)).toUriString());
-                return ResponseEntity.created(uri).body(existingBook.toDto());
-            } catch (Exception ex) {
-                return ResponseEntity.badRequest().body("Failed to update book");
+            // Update category
+            if(bookDto.getCategory() != null) {
+                Category category = categoryService.findById(bookDto.getCategory()).orElseThrow(ResourceNotFoundException::new);
+                existingBook.setCategory(category);
             }
+
+            // Update publisher
+            if(bookDto.getPublisher() != null) {
+                Publisher publisher = publisherService.findById(bookDto.getPublisher()).orElseThrow(ResourceNotFoundException::new);
+                existingBook.setPublisher(publisher);
+            }
+
+            // Update genre
+            if(bookDto.getGenre() != null) {
+                Genre genre = genreService.findById(bookDto.getGenre()).orElseThrow(ResourceNotFoundException::new);
+                existingBook.setGenre(genre);
+            }
+
+            // Update authors
+            if(bookDto.getAuthors() != null) {
+                List<Author> authors = bookDto.getAuthors().stream()
+                        .map(authorService::findById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .toList();
+                existingBook.setAuthors(authors);
+            }
+
+            URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path(String.format("{%d}", bookId)).toUriString());
+            return ResponseEntity.created(uri).body(existingBook.toDto());
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -245,52 +235,46 @@ public class BookController {
     }
 
     @PostMapping("{bookId}/review")
-    public ResponseEntity<?> createReview(@PathVariable Long bookId, @RequestBody @Validated ReviewRequestDtoV1 reviewDto) {
-        try {
-            // Get current logged-in user
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String username = ((UserDetails)authentication.getPrincipal()).getUsername();
+    public ResponseEntity<ReviewResponseDtoV1> createReview(@PathVariable Long bookId, @RequestBody @Validated ReviewRequestDtoV1 reviewDto) throws ResourceNotFoundException {
+        // Get current logged-in user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = ((UserDetails)authentication.getPrincipal()).getUsername();
 
-            // Get app user object
-            AppUser appUser = appUserService.findUserByEmail(username).orElseThrow(ResourceNotFoundException::new);
-            // Get book
-            Book book = bookService.findById(bookId).orElseThrow(ResourceNotFoundException::new);
+        // Get app user object
+        AppUser appUser = appUserService.findUserByEmail(username).orElseThrow(ResourceNotFoundException::new);
+        // Get book
+        Book book = bookService.findById(bookId).orElseThrow(ResourceNotFoundException::new);
 
-            Review review = new Review(null, reviewDto.getText(), reviewDto.getRating(), LocalDateTime.now(), appUser, book);
-            reviewService.create(review);
+        Review review = new Review(null, reviewDto.getText(), reviewDto.getRating(), LocalDateTime.now(), appUser, book);
+        reviewService.create(review);
 
-            URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path(String.format("{%d}/review", bookId)).toUriString());
-            return ResponseEntity.created(uri).body(null);
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("Failed to create review");
-        }
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path(String.format("{%d}/review", bookId)).toUriString());
+        return ResponseEntity.created(uri).body(review.toDto());
     }
 
     @PutMapping("{bookId}/review/{reviewId}")
-    public ResponseEntity<?> updateReview(@PathVariable Long bookId, @PathVariable Long reviewId, @RequestBody @Validated ReviewRequestDtoV1 reviewDto) {
-        try {
-            // Get current logged-in user
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String username = ((UserDetails)authentication.getPrincipal()).getUsername();
+    public ResponseEntity<ReviewResponseDtoV1> updateReview(@PathVariable Long bookId, @PathVariable Long reviewId, @RequestBody @Validated ReviewRequestDtoV1 reviewDto)
+            throws ResourceNotFoundException {
+        // Get current logged-in user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = ((UserDetails)authentication.getPrincipal()).getUsername();
 
-            // Get app user object
-            AppUser appUser = appUserService.findUserByEmail(username).orElseThrow(ResourceNotFoundException::new);
-            // Get book
-            Book book = bookService.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found."));
+        // Get app user object
+        AppUser appUser = appUserService.findUserByEmail(username).orElseThrow(ResourceNotFoundException::new);
+        // Get book
+        Book book = bookService.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found."));
 
-            // Update review
-            Review review = reviewService.findById(reviewId).orElseThrow(ResourceNotFoundException::new);
-            review.setText(reviewDto.getText());
-            review.setRating(reviewDto.getRating());
-            reviewService.update(review);
+        // Update review
+        Review review = reviewService.findById(reviewId).orElseThrow(ResourceNotFoundException::new);
+        review.setText(reviewDto.getText());
+        review.setRating(reviewDto.getRating());
+        reviewService.update(review);
 
-            URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(String.format("{%d}/review/{%d}", bookId, reviewId)).toUriString());
-            return ResponseEntity.created(uri).body(null);
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("Failed to update review");
-        }
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
+            .path(String.format("{%d}/review/{%d}", bookId, reviewId)).toUriString());
+        return ResponseEntity.created(uri).body(review.toDto());
+
     }
 
     @DeleteMapping("{bookId}/review/{reviewId}")

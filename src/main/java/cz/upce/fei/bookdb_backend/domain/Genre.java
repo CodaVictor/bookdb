@@ -1,5 +1,6 @@
 package cz.upce.fei.bookdb_backend.domain;
 
+import cz.upce.fei.bookdb_backend.dto.GenreResponseDtoV1;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -28,4 +29,12 @@ public class Genre {
     @EqualsAndHashCode.Exclude
     private List<Book> books = Collections.emptyList();
     // -----------------------
+
+    public GenreResponseDtoV1 toDto() {
+        return new GenreResponseDtoV1(
+                getId(),
+                getGenreName(),
+                getDescription()
+        );
+    }
 }

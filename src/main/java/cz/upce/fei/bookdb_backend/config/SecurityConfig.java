@@ -55,6 +55,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(PUT, "/books/{bookId}/review/{reviewId}").hasAnyAuthority("ROLE_USER", "ROLE_EDITOR", "ROLE_ADMIN");
         http.authorizeRequests().antMatchers(DELETE, "/books/{bookId}/review/{reviewId}").hasAnyAuthority("ROLE_USER", "ROLE_EDITOR", "ROLE_ADMIN");
 
+        // Authors
+        http.authorizeRequests().antMatchers(POST, "/authors").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/authors/{authorId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/authors/{authorId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+
+        // Genres
+        http.authorizeRequests().antMatchers(POST, "/genres").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/genres/{genreId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/genres/{genreId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+
         //http.authorizeRequests().anyRequest().authenticated(); // Turn on authentication for every endpoint
 
         http.addFilter(customAuthenticationFilter);

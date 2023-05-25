@@ -1,8 +1,6 @@
 package cz.upce.fei.bookdb_backend.service;
 
-import cz.upce.fei.bookdb_backend.domain.Author;
 import cz.upce.fei.bookdb_backend.domain.Review;
-import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -4,15 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewRequestDtoV1 {
+public class GenreRequestDtoV1 {
 
-    private String text;
+    private String genreName;
 
-    @NotNull
-    private Float rating;
+    private String description;
 }

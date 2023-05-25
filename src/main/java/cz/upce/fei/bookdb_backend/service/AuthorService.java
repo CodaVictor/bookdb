@@ -41,7 +41,8 @@ public class AuthorService {
                 authorDto.getFirstName(), authorDto.getLastName(), authorDto.getBirthdate());
 
         if(exists) {
-            throw new ConflictEntityException();
+            throw new ConflictEntityException(
+                String.format("Author %s %s, birthdate: %t already exists", authorDto.getFirstName(), authorDto.getLastName(), authorDto.getBirthdate()));
         }
 
         Author author = new Author();

@@ -1,6 +1,7 @@
 package cz.upce.fei.bookdb_backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.upce.fei.bookdb_backend.dto.ReviewResponseDtoV1;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,4 +41,13 @@ public class Review {
     @JsonIgnore
     private Book book;
     // -----------------------
+
+    public ReviewResponseDtoV1 toDto() {
+        return new ReviewResponseDtoV1(
+                getId(),
+                getText(),
+                getRating(),
+                getCreationDateTime()
+        );
+    }
 }
