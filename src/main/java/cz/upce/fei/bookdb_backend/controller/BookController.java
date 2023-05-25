@@ -1,6 +1,5 @@
 package cz.upce.fei.bookdb_backend.controller;
 
-import cz.upce.fei.bookdb_backend.component.ApiResponseBody;
 import cz.upce.fei.bookdb_backend.domain.*;
 import cz.upce.fei.bookdb_backend.dto.BookRequestDtoV1;
 import cz.upce.fei.bookdb_backend.dto.ReviewRequestDtoV1;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -142,7 +140,7 @@ public class BookController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> saveBook(@RequestBody @Validated BookRequestDtoV1 bookDto) {
+    public ResponseEntity<?> createBook(@RequestBody @Validated BookRequestDtoV1 bookDto) {
         try {
             Category category = null;
             if(bookDto.getCategory() != null) {
@@ -181,7 +179,7 @@ public class BookController {
     }
 
     @PutMapping("{bookId}")
-    public ResponseEntity<?> editBook(@PathVariable Long bookId, @RequestBody @Validated BookRequestDtoV1 bookDto) {
+    public ResponseEntity<?> updateBook(@PathVariable Long bookId, @RequestBody @Validated BookRequestDtoV1 bookDto) {
         Optional<Book> book = bookService.findById(bookId);
         if(book.isPresent()) {
             try {
@@ -247,7 +245,7 @@ public class BookController {
     }
 
     @PostMapping("{bookId}/review")
-    public ResponseEntity<?> saveReview(@PathVariable Long bookId, @RequestBody @Validated ReviewRequestDtoV1 reviewDto) {
+    public ResponseEntity<?> createReview(@PathVariable Long bookId, @RequestBody @Validated ReviewRequestDtoV1 reviewDto) {
         try {
             // Get current logged-in user
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -270,7 +268,7 @@ public class BookController {
     }
 
     @PutMapping("{bookId}/review/{reviewId}")
-    public ResponseEntity<?> editReview(@PathVariable Long bookId, @PathVariable Long reviewId, @RequestBody @Validated ReviewRequestDtoV1 reviewDto) {
+    public ResponseEntity<?> updateReview(@PathVariable Long bookId, @PathVariable Long reviewId, @RequestBody @Validated ReviewRequestDtoV1 reviewDto) {
         try {
             // Get current logged-in user
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

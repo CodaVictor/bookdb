@@ -26,17 +26,17 @@ public class PublisherService {
         return publisherRepository.findById(id);
     }
 
-    public Publisher savePublisher(final Publisher publisher) {
+    public Publisher create(final Publisher publisher) {
         log.info("Saving new publisher '{}' to the database.", publisher.getName());
         return publisherRepository.save(publisher);
     }
 
-    public Publisher updatePublisher(final Publisher publisher) {
+    public Publisher update(final Publisher publisher) {
         log.info("Saving updated publisher '{}' to the database.", publisher.getName());
         return publisherRepository.save(publisher);
     }
 
-    public void deletePublisher(final Long id) {
+    public void delete(final Long id) {
         log.info("Deleting publisher with id {}.", id);
         publisherRepository.deleteById(id);
     }

@@ -26,17 +26,17 @@ public class CategoryService {
         return categoryRepository.findById(id);
     }
 
-    public Category saveCategory(final Category category) {
+    public Category create(final Category category) {
         log.info("Saving new category '{}' to the database.", category.getName());
         return categoryRepository.save(category);
     }
 
-    public Category updateCategory(final Category category) {
+    public Category update(final Category category) {
         log.info("Saving updated category '{}' to the database.", category.getName());
         return categoryRepository.save(category);
     }
 
-    public void deleteCategory(final Long id) {
+    public void delete(final Long id) {
         log.info("Deleting category with id {}.", id);
         categoryRepository.deleteById(id);
     }
