@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class AppUserService implements UserDetailsService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AppUser findUser(String email) {
+    public Optional<AppUser> findUserByEmail(String email) {
         log.info("Fetching user with email {}.", email);
         return appUserRepository.findByEmail(email);
     }
@@ -50,7 +51,7 @@ public class AppUserService implements UserDetailsService {
 
     public void addRoleToUser(String email, String roleName) {
         log.info("Adding role {} to user with email {}.", roleName, email);
-        AppUser appUser = appUserRepository.findByEmail(email);
+        AppUser appUser = appUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found in database."));
         Role role = roleRepository.findByName(roleName);
         appUser.getRoles().add(role);
     }
@@ -63,14 +64,15 @@ public class AppUserService implements UserDetailsService {
     // Zabezpečení uživatele
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser user = appUserRepository.findByEmail(username);
-        if(user == null) {
+        Optional<AppUser> optUser = appUserRepository.findByEmail(username);
+        if(optUser.isEmpty()) {
             log.error("User not found in the database.");
             throw new UsernameNotFoundException("User not found in database.");
         } else {
             log.info("User found in the database.");
         }
 
+        AppUser user = optUser.get();
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);

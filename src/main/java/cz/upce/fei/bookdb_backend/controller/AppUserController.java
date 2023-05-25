@@ -8,7 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.upce.fei.bookdb_backend.domain.AppUser;
 import cz.upce.fei.bookdb_backend.domain.Role;
 import cz.upce.fei.bookdb_backend.dto.RoleToAppUserRequestDtoV1;
-import cz.upce.fei.bookdb_backend.security.CommonHashAlgorithmProvider;
+import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
+import cz.upce.fei.bookdb_backend.config.CommonHashAlgorithmProvider;
 import cz.upce.fei.bookdb_backend.service.AppUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +77,7 @@ public class AppUserController {
                 String username = decodedJWT.getSubject();
 
                 // Get roles of the authenticated user
-                AppUser user = appUserService.findUser(username);
+                AppUser user = appUserService.findUserByEmail(username).orElseThrow(ResourceNotFoundException::new);
                 String accessToken = JWT.create()
                         .withSubject(user.getEmail())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 60 minutes expiration

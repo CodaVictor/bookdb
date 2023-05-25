@@ -21,14 +21,8 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     @Transactional(readOnly = true)
-    public Review findById(Long id) throws ResourceNotFoundException {
-        Optional<Review> result = reviewRepository.findById(id);
-
-        if (result.isEmpty()) {
-            throw new ResourceNotFoundException();
-        }
-
-        return result.get();
+    public Optional<Review> findById(Long id) {
+        return reviewRepository.findById(id);
     }
 
     @Transactional(readOnly = true)

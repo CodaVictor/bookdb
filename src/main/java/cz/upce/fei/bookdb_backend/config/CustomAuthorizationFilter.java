@@ -1,4 +1,4 @@
-package cz.upce.fei.bookdb_backend.security;
+package cz.upce.fei.bookdb_backend.config;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

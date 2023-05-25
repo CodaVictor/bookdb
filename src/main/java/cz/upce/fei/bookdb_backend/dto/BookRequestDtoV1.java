@@ -13,8 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class BookRequestDtoV1 {
 
-    private Long id;
-
     @NotNull
     private String title;
 

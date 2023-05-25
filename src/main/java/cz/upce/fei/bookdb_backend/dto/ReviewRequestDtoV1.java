@@ -17,12 +17,13 @@ public class ReviewRequestDtoV1 {
     @NotNull
     private Float rating;
 
+    /*
     @NotNull
     private LocalDateTime creationDateTime;
+    */
 
+    /*
     @NotNull
     private Long bookId;
-
-    @NotNull
-    private Long userId;
+    */
 }

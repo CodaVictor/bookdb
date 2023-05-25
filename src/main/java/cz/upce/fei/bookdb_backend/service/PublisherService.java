@@ -22,14 +22,8 @@ public class PublisherService {
     private final PublisherRepository publisherRepository;
 
     @Transactional(readOnly = true)
-    public Publisher findById(final Long id) throws ResourceNotFoundException {
-        Optional<Publisher> result = publisherRepository.findById(id);
-
-        if (result.isEmpty()) {
-            throw new ResourceNotFoundException();
-        }
-
-        return result.get();
+    public Optional<Publisher> findById(final Long id) throws ResourceNotFoundException {
+        return publisherRepository.findById(id);
     }
 
     public Publisher savePublisher(final Publisher publisher) {

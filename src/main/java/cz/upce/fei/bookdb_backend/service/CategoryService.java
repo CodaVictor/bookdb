@@ -22,14 +22,8 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public Category findById(final Long id) throws ResourceNotFoundException {
-        Optional<Category> result = categoryRepository.findById(id);
-
-        if (result.isEmpty()) {
-            throw new ResourceNotFoundException();
-        }
-
-        return result.get();
+    public Optional<Category> findById(final Long id) throws ResourceNotFoundException {
+        return categoryRepository.findById(id);
     }
 
     public Category saveCategory(final Category category) {

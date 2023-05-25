@@ -33,14 +33,8 @@ public class BookService {
     private final AppUserRepository appUserRepository;
 
     @Transactional(readOnly = true)
-    public Book findById(final Long id) throws ResourceNotFoundException {
-        Optional<Book> result = bookRepository.findById(id);
-
-        if (result.isEmpty()) {
-            throw new ResourceNotFoundException();
-        }
-
-        return result.get();
+    public Optional<Book> findById(final Long id) {
+        return bookRepository.findById(id);
     }
 
     @Transactional(readOnly = true)
@@ -83,8 +77,8 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public void addReviewToBook(ReviewRequestDtoV1 reviewDto, String username, Long bookId) {
-        AppUser user = appUserRepository.findByEmail(username);
+    public void addReviewToBook(ReviewRequestDtoV1 reviewDto, String username, Long bookId) throws ResourceNotFoundException {
+        AppUser user = appUserRepository.findByEmail(username).orElseThrow(ResourceNotFoundException::new);
         if(user == null) {
             log.error("User not found in the database.");
         }

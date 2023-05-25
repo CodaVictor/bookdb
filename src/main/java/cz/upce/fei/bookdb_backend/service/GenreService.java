@@ -22,14 +22,8 @@ public class GenreService {
     private final GengeRepository gengeRepository;
 
     @Transactional(readOnly = true)
-    public Genre findById(final Long id) throws ResourceNotFoundException {
-        Optional<Genre> result = gengeRepository.findById(id);
-
-        if (result.isEmpty()) {
-            throw new ResourceNotFoundException();
-        }
-
-        return result.get();
+    public Optional<Genre> findById(final Long id) throws ResourceNotFoundException {
+        return gengeRepository.findById(id);
     }
 
     public Genre create(final Genre genre) {

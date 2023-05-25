@@ -1,10 +1,7 @@
 package cz.upce.fei.bookdb_backend.domain;
 
 import cz.upce.fei.bookdb_backend.dto.BookResponseDtoV1;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -14,6 +11,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Book {
 

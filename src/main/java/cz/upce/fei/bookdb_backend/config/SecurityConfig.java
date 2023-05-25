@@ -1,4 +1,4 @@
-package cz.upce.fei.bookdb_backend.security;
+package cz.upce.fei.bookdb_backend.config;
 
 import cz.upce.fei.bookdb_backend.values.ServerPaths;
 import lombok.AllArgsConstructor;
@@ -14,8 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity
@@ -41,12 +40,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(ServerPaths.LOGIN_PATH + "/**", ServerPaths.TOKEN_REFRESH_PATH + "/**")
                 .permitAll();
+        // User and role
         http.authorizeRequests().antMatchers(GET, ServerPaths.USERS_PATH).hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(POST, ServerPaths.USER_PATH + "/save/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(POST, ServerPaths.ROLE_PATH + "/**").hasAnyAuthority("ROLE_ADMIN");
-        http.authorizeRequests().antMatchers(POST, ServerPaths.BOOK_PATH + "/save/**").hasAnyAuthority("ROLE_EDITOR");
-        http.authorizeRequests().antMatchers(POST, ServerPaths.REVIEW_PATH + "/save/**").hasAnyAuthority("ROLE_USER");
-        //http.authorizeRequests().anyRequest().authenticated();
+
+        // Books
+        http.authorizeRequests().antMatchers(POST, "/books").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN"); // Create
+        http.authorizeRequests().antMatchers(PUT, "/books/{bookId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN"); // Update
+        http.authorizeRequests().antMatchers(DELETE, "/books/{bookId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN"); // Delete
+
+        // Book reviews
+        http.authorizeRequests().antMatchers(POST, "/books/{bookId}/review").hasAnyAuthority("ROLE_USER", "ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/books/{bookId}/review/{reviewId}").hasAnyAuthority("ROLE_USER", "ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/books/{bookId}/review/{reviewId}").hasAnyAuthority("ROLE_USER", "ROLE_EDITOR", "ROLE_ADMIN");
+
+        //http.authorizeRequests().anyRequest().authenticated(); // Turn on authentication for every endpoint
+
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }

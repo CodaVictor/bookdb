@@ -1,15 +1,9 @@
 package cz.upce.fei.bookdb_backend.service;
 
 import cz.upce.fei.bookdb_backend.domain.Author;
-import cz.upce.fei.bookdb_backend.domain.Book;
-import cz.upce.fei.bookdb_backend.domain.Review;
-import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.repository.AuthorRepository;
-import cz.upce.fei.bookdb_backend.repository.ReviewRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,14 +19,8 @@ public class AuthorService {
     private final AuthorRepository authorRepository;
 
     @Transactional(readOnly = true)
-    public Author findById(Long id) throws ResourceNotFoundException {
-        Optional<Author> result = authorRepository.findById(id);
-
-        if (result.isEmpty()) {
-            throw new ResourceNotFoundException();
-        }
-
-        return result.get();
+    public Optional<Author> findById(Long id) {
+        return authorRepository.findById(id);
     }
 
     @Transactional(readOnly = true)
