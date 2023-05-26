@@ -1,21 +1,14 @@
 package cz.upce.fei.bookdb_backend.component;
 
-import cz.upce.fei.bookdb_backend.domain.AppUser;
-import cz.upce.fei.bookdb_backend.domain.Book;
-import cz.upce.fei.bookdb_backend.domain.Role;
-import cz.upce.fei.bookdb_backend.repository.BookRepository;
 import cz.upce.fei.bookdb_backend.service.AppUserService;
 import cz.upce.fei.bookdb_backend.service.BookService;
+import cz.upce.fei.bookdb_backend.service.CategoryService;
+import cz.upce.fei.bookdb_backend.service.PublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 @Component
 @Slf4j
@@ -23,10 +16,15 @@ public class DatabaseRunner implements ApplicationRunner {
 
     private final BookService bookService;
     private final AppUserService appUserService;
+    private final PublisherService publisherService;
+    private final CategoryService categoryService;
 
-    public DatabaseRunner(BookService bookService, AppUserService appUserService) {
+    public DatabaseRunner(BookService bookService, AppUserService appUserService,
+                          PublisherService publisherService, CategoryService categoryService) {
         this.bookService = bookService;
         this.appUserService = appUserService;
+        this.publisherService = publisherService;
+        this.categoryService = categoryService;
     }
 
     @Override
@@ -66,6 +64,17 @@ public class DatabaseRunner implements ApplicationRunner {
         appUserService.saveUser(new AppUser(null, "Test", "Testamon",
                 "tt@email.cz", "heslo", Collections.emptyList(), new ArrayList<Role>()));
         appUserService.addRoleToUser("tt@email.cz", "ROLE_ADMIN");
+        */
+
+        /*
+        publisherService.create("Grada");
+        publisherService.create("Argo");
+        publisherService.create("Naše vojsko");
+        publisherService.create("Odeon");
+
+        categoryService.create(new CategoryRequestDtoV1("Papírové knihy", null));
+        categoryService.create(new CategoryRequestDtoV1("E-knihy", null));
+        categoryService.create(new CategoryRequestDtoV1("Audioknihy", null));
         */
     }
 }

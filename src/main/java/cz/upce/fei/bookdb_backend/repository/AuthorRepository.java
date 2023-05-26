@@ -1,14 +1,12 @@
 package cz.upce.fei.bookdb_backend.repository;
 
 import cz.upce.fei.bookdb_backend.domain.Author;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
-public interface AuthorRepository extends PagingAndSortingRepository<Author, Long> {
+public interface AuthorRepository extends JpaRepository<Author, Long> {
     boolean existsByFirstNameAndLastNameAndBirthdate(String firstName, String lastName, LocalDateTime birthdate);
 }

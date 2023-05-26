@@ -1,7 +1,6 @@
 package cz.upce.fei.bookdb_backend.component;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 
 @AllArgsConstructor
 public class ApiResponseBody {

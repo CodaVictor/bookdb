@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +15,7 @@ public class BookResponseDtoV1 {
 
     private String title;
 
-    private Integer subtitle;
+    private String subtitle;
 
     private String isbn;
 
@@ -27,6 +27,16 @@ public class BookResponseDtoV1 {
 
     private String description;
 
+    private PublisherResponseDtoV1 publisher;
+
+    private CategoryResponseDtoV1 category;
+
+    private GenreResponseDtoV1 genre;
+
+    private List<AuthorResponseDtoV1> authors;
+
+    //
     private long reviewCount;
+
     private Long rating;
 }

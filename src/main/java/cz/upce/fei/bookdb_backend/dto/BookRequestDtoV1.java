@@ -3,6 +3,7 @@ package cz.upce.fei.bookdb_backend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -14,20 +15,26 @@ import java.util.List;
 public class BookRequestDtoV1 {
 
     @NotNull
+    @Length(max = 255)
     private String title;
 
-    private Integer subtitle;
+    @Length(max = 255)
+    private String subtitle;
 
+    @Length(max = 255)
     private String isbn;
 
+    @Length(max = 255)
     private String language;
 
     private LocalDateTime publicationDate;
 
     private Integer pageCount;
 
+    @Length(max = 1024)
     private String description;
 
+    @Length(max = 255)
     private String filename;
 
     //

@@ -1,5 +1,6 @@
 package cz.upce.fei.bookdb_backend.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.upce.fei.bookdb_backend.dto.GenreResponseDtoV1;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,6 +28,7 @@ public class Genre {
     // Book-genre
     @OneToMany(mappedBy = "genre", orphanRemoval = true)
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private List<Book> books = Collections.emptyList();
     // -----------------------
 

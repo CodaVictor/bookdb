@@ -35,7 +35,7 @@ public class AppUserService implements UserDetailsService {
 
     public List<AppUser> getAllAppUsers() {
         log.info("Fetching all users.");
-        return (List<AppUser>)appUserRepository.findAll();
+        return appUserRepository.findAll();
     }
 
     public AppUser saveUser(AppUser appUser) {

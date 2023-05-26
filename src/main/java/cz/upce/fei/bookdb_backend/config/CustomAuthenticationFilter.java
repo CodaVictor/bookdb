@@ -28,9 +28,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final HashUtils hashUtils;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, HashUtils hashUtils) {
         this.authenticationManager = authenticationManager;
+        this.hashUtils = hashUtils;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User)authentication.getPrincipal();
-        Algorithm algorithm = CommonHashAlgorithmProvider.currentAlgorithm();
+        Algorithm algorithm = hashUtils.currentAlgorithm();
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 60 minutes expiration
@@ -58,7 +60,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         String refreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 180 * 60 * 1000)) // 60 minutes expiration
+                .withExpiresAt(new Date(System.currentTimeMillis() + 180 * 60 * 1000)) // 180 minutes expiration
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
 

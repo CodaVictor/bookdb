@@ -1,5 +1,7 @@
 package cz.upce.fei.bookdb_backend.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.upce.fei.bookdb_backend.dto.CategoryResponseDtoV1;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -25,6 +27,15 @@ public class Category {
     // Book-category
     @OneToMany(mappedBy = "category", orphanRemoval = true)
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private List<Book> books = Collections.emptyList();
     // -----------------------
+
+    public CategoryResponseDtoV1 toDto() {
+        return new CategoryResponseDtoV1(
+                getId(),
+                getName(),
+                getDescription()
+        );
+    }
 }

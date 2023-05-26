@@ -23,6 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final HashUtils hashUtils;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -32,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // Zde záleží na pořadí konfigurace
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), hashUtils);
         customAuthenticationFilter.setFilterProcessesUrl(ServerPaths.LOGIN_PATH);
 
         http.csrf().disable(); // Disable stateful policy (which uses session and cookies)
@@ -51,9 +52,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(DELETE, "/books/{bookId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN"); // Delete
 
         // Book reviews
-        http.authorizeRequests().antMatchers(POST, "/books/{bookId}/review").hasAnyAuthority("ROLE_USER", "ROLE_EDITOR", "ROLE_ADMIN");
-        http.authorizeRequests().antMatchers(PUT, "/books/{bookId}/review/{reviewId}").hasAnyAuthority("ROLE_USER", "ROLE_EDITOR", "ROLE_ADMIN");
-        http.authorizeRequests().antMatchers(DELETE, "/books/{bookId}/review/{reviewId}").hasAnyAuthority("ROLE_USER", "ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(POST, "/reviews/{bookId}").hasAnyAuthority("ROLE_USER", "ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/reviews/{bookId}/{reviewId}").hasAnyAuthority("ROLE_USER", "ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/reviews/{bookId}/{reviewId}").hasAnyAuthority("ROLE_USER", "ROLE_EDITOR", "ROLE_ADMIN");
 
         // Authors
         http.authorizeRequests().antMatchers(POST, "/authors").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
@@ -68,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //http.authorizeRequests().anyRequest().authenticated(); // Turn on authentication for every endpoint
 
         http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new CustomAuthorizationFilter(hashUtils), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

@@ -1,12 +1,11 @@
 package cz.upce.fei.bookdb_backend.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Pattern;
+import java.util.List;
 
 @Data
 @NoArgsConstructor

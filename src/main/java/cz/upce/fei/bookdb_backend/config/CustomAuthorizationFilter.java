@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.upce.fei.bookdb_backend.values.ServerPaths;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,7 +25,10 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
+@RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
+
+    private final HashUtils hashUtils;
 
     // Method for ensuring that user has access to specific endpoint or not
     @Override
@@ -39,7 +43,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             try {
                 // Get token from token bearer
                 String token = authorizationHeader.substring("Bearer ".length());
-                Algorithm algorithm = CommonHashAlgorithmProvider.currentAlgorithm();
+                Algorithm algorithm = hashUtils.currentAlgorithm();
                 JWTVerifier verifier = JWT.require(algorithm).build();
 
                 // Get user information from JWT token (username and roles)

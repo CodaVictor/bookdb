@@ -2,12 +2,12 @@ package cz.upce.fei.bookdb_backend.domain;
 
 import cz.upce.fei.bookdb_backend.dto.BookResponseDtoV1;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -23,7 +23,7 @@ public class Book {
     private String title;
 
     @Column
-    private Integer subtitle;
+    private String subtitle;
 
     @Column
     private String isbn;
@@ -50,10 +50,9 @@ public class Book {
     // -----------------------
 
     // Book-publisher
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "publisher_id")
     @ToString.Exclude
-    @JsonIgnore
     private Publisher publisher;
     // -----------------------
 
@@ -67,7 +66,6 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "category_id")
     @ToString.Exclude
-    @JsonIgnore
     private Category category;
     // -----------------------
 
@@ -75,7 +73,6 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "genre_id")
     @ToString.Exclude
-    @JsonIgnore
     private Genre genre;
     // -----------------------
 
@@ -89,6 +86,10 @@ public class Book {
                 getPublicationDate(),
                 getPageCount(),
                 getDescription(),
+                getPublisher().toDto(),
+                getCategory().toDto(),
+                getGenre().toDto(),
+                getAuthors().stream().map(Author::toDto).collect(Collectors.toList()),
                 0,null
         );
     }

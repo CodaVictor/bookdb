@@ -6,7 +6,6 @@ import cz.upce.fei.bookdb_backend.dto.AuthorResponseDtoV1;
 import cz.upce.fei.bookdb_backend.exception.ConflictEntityException;
 import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.service.AuthorService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,7 +14,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,23 +25,17 @@ public class AuthorController {
 
     @GetMapping("")
     public ResponseEntity<List<AuthorResponseDtoV1>> findAll() {
-        List<Author> result = authorService.findAll();
-
-        return ResponseEntity.ok(result
-                .stream()
+        List<AuthorResponseDtoV1> result = authorService.findAll().stream()
                 .map(Author::toDto)
-                .collect(Collectors.toList())
-        );
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("{authorId}")
-    public ResponseEntity<AuthorResponseDtoV1> findById(@PathVariable Long authorId) {
-        Optional<Author> author = authorService.findById(authorId);
-        if(author.isPresent()) {
-            return ResponseEntity.ok(author.get().toDto());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<AuthorResponseDtoV1> findById(@PathVariable Long authorId) throws ResourceNotFoundException {
+        Author author = authorService.findById(authorId);
+        return ResponseEntity.ok(author.toDto());
     }
 
     @PostMapping("")
@@ -55,29 +47,17 @@ public class AuthorController {
     }
 
     @PutMapping("{authorId}")
-    public ResponseEntity<AuthorResponseDtoV1> updateAuthor(@PathVariable Long authorId, @RequestBody @Validated AuthorRequestDtoV1 authorDto) throws ConflictEntityException, ResourceNotFoundException {
-        Author author = authorService.findById(authorId).orElseThrow(() -> new ResourceNotFoundException("Author not found."));
+    public ResponseEntity<AuthorResponseDtoV1> updateAuthor(@PathVariable Long authorId, @RequestBody @Validated AuthorRequestDtoV1 authorDto)
+            throws ConflictEntityException, ResourceNotFoundException {
+        Author author = authorService.update(authorDto, authorId);
 
-        // Check new author's attributes
-        boolean exists = authorService.existsByFirstNameAndLastNameAndBirthdate(authorDto.getFirstName(), authorDto.getLastName(), authorDto.getBirthdate());
-        if(exists) {
-            throw new ConflictEntityException("Author with the current first name, last name and birth date already exists.");
-        }
-
-        author.setFirstName(authorDto.getFirstName());
-        author.setLastName(authorDto.getLastName());
-        author.setBirthdate(authorDto.getBirthdate());
-        author.setDescription(author.getDescription());
-        authorService.update(author);
-
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/{id}").toUriString());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path(String.format("/authors/{%s}", author.getId())).toUriString());
         return ResponseEntity.created(uri).body(author.toDto());
     }
 
     @DeleteMapping("{authorId}")
-    public ResponseEntity<?> deleteAuthor(@PathVariable Long authorId) throws ConflictEntityException, ResourceNotFoundException {
-        Author author = authorService.findById(authorId).orElseThrow(() -> new ResourceNotFoundException("Author not found."));
-        authorService.delete(author.getId());
+    public ResponseEntity<?> deleteAuthor(@PathVariable Long authorId) throws ResourceNotFoundException {
+        authorService.delete(authorId);
 
         return ResponseEntity.noContent().build();
     }

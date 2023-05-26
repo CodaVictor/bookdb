@@ -1,11 +1,10 @@
 package cz.upce.fei.bookdb_backend.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.upce.fei.bookdb_backend.dto.AuthorResponseDtoV1;
-import cz.upce.fei.bookdb_backend.dto.BookResponseDtoV1;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

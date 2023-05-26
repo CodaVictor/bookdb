@@ -6,7 +6,6 @@ import cz.upce.fei.bookdb_backend.dto.GenreResponseDtoV1;
 import cz.upce.fei.bookdb_backend.exception.ConflictEntityException;
 import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.service.GenreService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,7 +14,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,23 +25,18 @@ public class GenreController {
 
     @GetMapping("")
     public ResponseEntity<List<GenreResponseDtoV1>> findAll() {
-        List<Genre> result = genreService.findAll();
-
-        return ResponseEntity.ok(result
-                .stream()
+        List<GenreResponseDtoV1> result = genreService.findAll().stream()
                 .map(Genre::toDto)
-                .collect(Collectors.toList())
-        );
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("{genreId}")
-    public ResponseEntity<GenreResponseDtoV1> findById(@PathVariable Long genreId) {
-        Optional<Genre> genre = genreService.findById(genreId);
-        if(genre.isPresent()) {
-            return ResponseEntity.ok(genre.get().toDto());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<GenreResponseDtoV1> findById(@PathVariable Long genreId) throws ResourceNotFoundException {
+        Genre genre = genreService.findById(genreId);
+        return ResponseEntity.ok(genre.toDto());
+
     }
 
     @PostMapping("")
@@ -57,26 +50,15 @@ public class GenreController {
     @PutMapping("{genreId}")
     public ResponseEntity<GenreResponseDtoV1> updateGenre(@PathVariable Long genreId, @RequestBody @Validated GenreRequestDtoV1 genreDto)
             throws ConflictEntityException, ResourceNotFoundException {
-        Genre genre = genreService.findById(genreId).orElseThrow(() -> new ResourceNotFoundException("Genre not found."));
-        boolean exists = genreService.existsByGenreName(genreDto.getGenreName());
+        Genre genre = genreService.update(genreDto, genreId);
 
-        if(exists) {
-            throw new ConflictEntityException(String.format("Genre with name %s already exists.", genreDto.getGenreName()));
-        }
-
-        genre.setGenreName(genreDto.getGenreName());
-        genre.setDescription(genreDto.getDescription());
-        genreService.update(genre);
-
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("{id}").toUriString());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/genres/{id}").toUriString());
         return ResponseEntity.created(uri).body(genre.toDto());
     }
 
     @DeleteMapping("{genreId}")
     public ResponseEntity<?> deleteGenre(@PathVariable Long genreId) throws ResourceNotFoundException {
-        Genre genre = genreService.findById(genreId).orElseThrow(() -> new ResourceNotFoundException("Genre not found."));
-        genreService.delete(genre.getId());
-
+        genreService.delete(genreId);
         return ResponseEntity.noContent().build();
     }
 }

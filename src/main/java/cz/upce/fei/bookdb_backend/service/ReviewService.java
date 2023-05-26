@@ -1,14 +1,25 @@
 package cz.upce.fei.bookdb_backend.service;
 
+import cz.upce.fei.bookdb_backend.domain.AppUser;
+import cz.upce.fei.bookdb_backend.domain.Book;
 import cz.upce.fei.bookdb_backend.domain.Review;
+import cz.upce.fei.bookdb_backend.dto.ReviewRequestDtoV1;
+import cz.upce.fei.bookdb_backend.exception.ConflictEntityException;
+import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
+import cz.upce.fei.bookdb_backend.exception.UnauthorizedAccessException;
+import cz.upce.fei.bookdb_backend.repository.AppUserRepository;
+import cz.upce.fei.bookdb_backend.repository.BookRepository;
 import cz.upce.fei.bookdb_backend.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,10 +28,22 @@ import java.util.Optional;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final BookRepository bookRepository;
+    private final AppUserRepository appUserRepository;
 
     @Transactional(readOnly = true)
-    public Optional<Review> findById(Long id) {
-        return reviewRepository.findById(id);
+    public Review findById(Long id) throws ResourceNotFoundException {
+        return reviewRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Review not found."));
+    }
+
+    @Transactional(readOnly = true)
+    public Review findByReviewIdAndBookId(final Long reviewId, final Long bookId) throws ResourceNotFoundException {
+        return reviewRepository.findByIdAndBookId(reviewId, bookId).orElseThrow(()-> new ResourceNotFoundException("Reviews not found."));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Review> findAllByBookId(final Long bookId) {
+        return reviewRepository.findAllByBookId(bookId);
     }
 
     @Transactional(readOnly = true)
@@ -34,21 +57,67 @@ public class ReviewService {
     }
 
     public List<Review> findAll() {
-        return (List<Review>)reviewRepository.findAll();
+        return reviewRepository.findAll();
     }
 
-    public Review create(Review review) {
+    public Review create(final ReviewRequestDtoV1 reviewDto, final Long bookId) throws ResourceNotFoundException, ConflictEntityException {
+        // Get current logged-in user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = ((UserDetails)authentication.getPrincipal()).getUsername();
+
+        AppUser appUser = appUserRepository.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("User not found."));
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found."));
+
+        if(reviewRepository.existsByBookIdAndUserId(appUser.getId(), book.getId())) {
+            throw new ConflictEntityException(String.format("User '%s' already wrote review to the book '%s'", appUser.getEmail(), book.getTitle()));
+        }
+
+        Review review = new Review(null, reviewDto.getText(), reviewDto.getRating(), LocalDateTime.now(), appUser, book);
+
         log.info("Saving new review to book {}, with user {}, to the database.", review.getBook().getTitle(), review.getUser().getEmail());
         return reviewRepository.save(review);
     }
 
-    public Review update(Review review) {
+    public Review update(final ReviewRequestDtoV1 reviewDto, final Long reviewId, final Long bookId) throws ResourceNotFoundException {
+        // Get current logged-in user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = ((UserDetails)authentication.getPrincipal()).getUsername();
+
+        AppUser user = appUserRepository.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("User not found."));
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found."));
+
+        Review review = reviewRepository.findByIdBookIdAndUserId(reviewId, bookId, user.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("Review not found."));
+
+        review.setText(reviewDto.getText());
+        review.setRating(review.getRating());
+
         log.info("Saving updated review to book {}, with user {}, to the database.", review.getBook().getTitle(), review.getUser().getEmail());
         return reviewRepository.save(review);
     }
 
-    public void delete(final Long id) {
-        log.info("Deleting review with id {}.", id);
-        reviewRepository.deleteById(id);
+    public void delete(final Long bookId, final Long reviewId) throws ResourceNotFoundException, UnauthorizedAccessException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = ((UserDetails)authentication.getPrincipal());
+        String username = userDetails.getUsername();
+
+        AppUser user = appUserRepository.findByEmail(username).orElseThrow(() -> new UnauthorizedAccessException("Unauthorized user."));
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found."));
+        Review review;
+
+        // Check if current user (non review creator) is authorized for this operation
+        boolean isAuthorized = userDetails.getAuthorities().stream()
+                .anyMatch((authority) -> {
+                    return authority.getAuthority().equals("ROLE_EDITOR") || authority.getAuthority().equals("ROLE_ADMIN");
+                });
+        if(isAuthorized) {
+            // Only reviewId is enough
+            review = reviewRepository.findById(reviewId).orElseThrow(() -> new ResourceNotFoundException("Review not found."));
+        } else {
+            review = reviewRepository.findByIdAndUserId(reviewId, user.getId()).orElseThrow(() -> new ResourceNotFoundException("Review not found."));
+        }
+
+        log.info("Deleting review with id {}.", reviewId);
+        reviewRepository.delete(review);
     }
 }

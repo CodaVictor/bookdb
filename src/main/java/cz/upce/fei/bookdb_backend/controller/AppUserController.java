@@ -5,15 +5,14 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.upce.fei.bookdb_backend.config.HashUtils;
 import cz.upce.fei.bookdb_backend.domain.AppUser;
 import cz.upce.fei.bookdb_backend.domain.Role;
 import cz.upce.fei.bookdb_backend.dto.RoleToAppUserRequestDtoV1;
 import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
-import cz.upce.fei.bookdb_backend.config.CommonHashAlgorithmProvider;
 import cz.upce.fei.bookdb_backend.service.AppUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -37,6 +39,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 public class AppUserController {
     private final AppUserService appUserService;
+    private final HashUtils hashUtils;
 
     @GetMapping("/users")
     public ResponseEntity<List<AppUser>> getUsers() {
@@ -69,7 +72,7 @@ public class AppUserController {
             try {
                 // Get token from token bearer
                 String refreshToken = authorizationHeader.substring("Bearer ".length());
-                Algorithm algorithm = CommonHashAlgorithmProvider.currentAlgorithm();
+                Algorithm algorithm = hashUtils.currentAlgorithm();
                 JWTVerifier verifier = JWT.require(algorithm).build();
 
                 // Get user information from JWT token (username and roles)
