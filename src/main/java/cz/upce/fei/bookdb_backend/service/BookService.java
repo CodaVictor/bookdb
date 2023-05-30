@@ -7,6 +7,7 @@ import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.repository.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
@@ -37,13 +38,8 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public List<Book> findAll(@Nullable Specification<Book> specification, Pageable pageable) {
-        return bookRepository.findAll(specification, pageable).getContent();
-    }
-
-    @Transactional(readOnly = true)
-    public List<Book> findAllBy(Specification<Book> specification, Pageable pageable) {
-        return bookRepository.findAll(specification, pageable).getContent();
+    public Page<Book> findAllBy(Specification<Book> specification, Pageable pageable) {
+        return bookRepository.findAll(specification, pageable);
     }
 
     public Book create(final BookRequestDtoV1 bookDto) throws ResourceNotFoundException, ConflictEntityException {

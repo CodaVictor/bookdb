@@ -66,6 +66,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(PUT, "/genres/{genreId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
         http.authorizeRequests().antMatchers(DELETE, "/genres/{genreId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
 
+        // Categories
+        http.authorizeRequests().antMatchers(POST, "/categories").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/categories/{categoryId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/categories/{categoryId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+
+        // Publishers
+        http.authorizeRequests().antMatchers(POST, "/publishers").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/publishers/{publisherId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/publishers/{publisherId}").hasAnyAuthority("ROLE_EDITOR", "ROLE_ADMIN");
+
         //http.authorizeRequests().anyRequest().authenticated(); // Turn on authentication for every endpoint
 
         http.addFilter(customAuthenticationFilter);

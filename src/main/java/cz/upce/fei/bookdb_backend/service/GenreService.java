@@ -67,7 +67,7 @@ public class GenreService {
 
         if(exists) {
             throw new ConflictEntityException(
-                    String.format("Genre %s already exists", genreDto.getGenreName()));
+                    String.format("Genre %s already exists.", genreDto.getGenreName()));
         }
 
         genre.setGenreName(genreDto.getGenreName());

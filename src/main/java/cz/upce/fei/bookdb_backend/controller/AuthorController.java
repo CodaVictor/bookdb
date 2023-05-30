@@ -51,7 +51,7 @@ public class AuthorController {
             throws ConflictEntityException, ResourceNotFoundException {
         Author author = authorService.update(authorDto, authorId);
 
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path(String.format("/authors/{%s}", author.getId())).toUriString());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path(String.format("/{%s}", author.getId())).toUriString());
         return ResponseEntity.created(uri).body(author.toDto());
     }
 

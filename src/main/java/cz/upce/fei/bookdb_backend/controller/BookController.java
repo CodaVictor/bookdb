@@ -2,7 +2,7 @@ package cz.upce.fei.bookdb_backend.controller;
 
 import cz.upce.fei.bookdb_backend.domain.Book;
 import cz.upce.fei.bookdb_backend.dto.BookRequestDtoV1;
-import cz.upce.fei.bookdb_backend.dto.BookRequestParamDtoV1;
+import cz.upce.fei.bookdb_backend.dto.BookFilterParameters;
 import cz.upce.fei.bookdb_backend.dto.BookResponseDtoV1;
 import cz.upce.fei.bookdb_backend.exception.ConflictEntityException;
 import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
@@ -10,7 +10,9 @@ import cz.upce.fei.bookdb_backend.repository.specification.BookSpecification;
 import cz.upce.fei.bookdb_backend.service.*;
 import cz.upce.fei.bookdb_backend.values.DefaultValues;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +24,6 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/books")
@@ -40,32 +41,29 @@ public class BookController {
     public ResponseEntity<List<BookResponseDtoV1>> findAll(
             @RequestParam(required = false) @Min(1) @Max(Integer.MAX_VALUE) Integer page,
             @RequestParam(required = false) @Min(1) @Max(512) Integer pageSize,
-            @RequestBody(required = false) @Validated BookRequestParamDtoV1 parameters) {
-        Sort.Direction direction = null;
-        String orderBy = null;
+            @RequestBody(required = false) @Validated BookFilterParameters parameters) {
         Specification<Book> specification = Specification.where(null);
         Integer currentPage = DefaultValues.DEFAULT_PAGE;
         Integer currentPageSize = DefaultValues.BOOK_DEFAULT_PAGE_SIZE;
-        List<Book> result;
+        Pageable pageable;
+        Page<Book> booksPage;
 
+        // Set page and page size
         if(page != null && pageSize != null) {
             currentPage = page - 1;
             currentPageSize = pageSize;
         }
 
+        pageable = PageRequest.of(currentPage, currentPageSize);
+
+        // Set parameters
         if(parameters != null) {
             // Sort direction (ASC/DESC)
-            if(parameters.getOrderParameter() != null) {
-                if (parameters.getOrderParameter().equalsIgnoreCase("ASC")) {
-                    direction = Sort.Direction.ASC;
-                } else if (parameters.getOrderParameter().equalsIgnoreCase("DESC")) {
-                    direction = Sort.Direction.DESC;
-                }
-            }
-
-            // OrderBy
-            if(parameters.getOrderBy() != null) {
-                orderBy = parameters.getOrderBy();
+            if(parameters.getOrderDirection() != null && parameters.getOrderBy() != null) {
+                // Sort direction (ASC or DESC) and sorting field (name)
+                Sort sort = Sort.by(Sort.Direction.fromString(parameters.getOrderDirection()), parameters.getOrderBy());
+                // Create pageable object
+                pageable = PageRequest.of(currentPage, currentPageSize, sort);
             }
 
             // Filters
@@ -94,16 +92,12 @@ public class BookController {
             }
         }
 
-        if(direction == null || orderBy == null) {
-            result = bookService.findAllBy(specification, PageRequest.of(currentPage, currentPageSize));
-        } else {
-            result = bookService.findAllBy(specification, PageRequest.of(currentPage, currentPageSize, direction, orderBy));
-        }
+        booksPage = bookService.findAllBy(specification, pageable);
 
-        List<BookResponseDtoV1> responseBooks = result
+        List<BookResponseDtoV1> responseBooks = booksPage.getContent()
                 .stream()
                 .map(Book::toDto)
-                .collect(Collectors.toList());
+                .toList();
 
         // Ideální by bylo vše provést v jednom dotazu, ale nevím jak
         responseBooks.forEach(bookDto -> {
@@ -111,11 +105,14 @@ public class BookController {
             reviewService.getAvgRatingOfBook(bookDto.getId());
         });
 
-        return ResponseEntity.ok(responseBooks);
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(booksPage.getTotalElements()))
+                .header("X-Total-Pages", String.valueOf(booksPage.getTotalPages()))
+                .body(responseBooks);
     }
 
     @GetMapping("{bookId}")
-    public ResponseEntity<BookResponseDtoV1> findBookById(@PathVariable Long bookId) throws ResourceNotFoundException {
+    public ResponseEntity<BookResponseDtoV1> findById(@PathVariable Long bookId) throws ResourceNotFoundException {
         Book book = bookService.findById(bookId);
         long reviewCount = reviewService.getReviewCountOfBook(bookId);
         Long avgRating = reviewService.getAvgRatingOfBook(bookId);

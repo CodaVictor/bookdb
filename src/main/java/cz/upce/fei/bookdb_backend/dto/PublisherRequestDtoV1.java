@@ -5,20 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewRequestDtoV1 {
+public class PublisherRequestDtoV1 {
 
-    @Length(max = 2048)
-    private String text;
-
-    @NotNull
-    @Min(0)
-    @Max(5)
-    private Float rating;
+    @NotBlank(message = "Publisher name is required.")
+    @Length(max = 255)
+    private String name;
 }

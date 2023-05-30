@@ -10,11 +10,12 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookRequestParamDtoV1 {
+public class BookFilterParameters {
 
-    @Pattern(regexp = "asc|desc", message = "The value must be 'asc' or 'desc'")
+
     private String orderBy;
-    private String orderParameter;
+    @Pattern(regexp = "ASC|DESC", message = "The value must be 'ASC' or 'DESC'.")
+    private String orderDirection;
     private List<Long> category;
     private List<Long> publisher;
     private List<Long> genre;

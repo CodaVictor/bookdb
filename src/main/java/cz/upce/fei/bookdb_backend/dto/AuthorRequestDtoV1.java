@@ -12,10 +12,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthorRequestDtoV1 {
-    @NotBlank
+    @NotBlank(message = "First name is required.")
     @Length(max = 255)
     private String firstName;
 
+    @NotBlank(message = "Last name is required.")
     @Length(max = 255)
     private String lastName;
 

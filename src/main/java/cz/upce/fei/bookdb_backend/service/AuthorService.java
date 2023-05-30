@@ -69,7 +69,7 @@ public class AuthorService {
 
         if(exists) {
             throw new ConflictEntityException(
-                String.format("Author %s %s, birthdate: %s already exists", authorDto.getFirstName(), authorDto.getLastName(), authorDto.getBirthdate()));
+                String.format("Author %s %s, birthdate: %s already exists.", authorDto.getFirstName(), authorDto.getLastName(), authorDto.getBirthdate()));
         }
 
         author.setFirstName(authorDto.getFirstName());

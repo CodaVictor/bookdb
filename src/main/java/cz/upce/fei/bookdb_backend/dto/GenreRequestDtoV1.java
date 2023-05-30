@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -12,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class GenreRequestDtoV1 {
 
-    @NotNull
+    @NotBlank(message = "Genre name is required.")
     @Length(max = 255)
     private String genreName;
 

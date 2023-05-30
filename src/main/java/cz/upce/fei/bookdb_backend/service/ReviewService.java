@@ -65,14 +65,14 @@ public class ReviewService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = ((UserDetails)authentication.getPrincipal()).getUsername();
 
-        AppUser appUser = appUserRepository.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("User not found."));
+        AppUser user = appUserRepository.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("User not found."));
         Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found."));
 
-        if(reviewRepository.existsByBookIdAndUserId(appUser.getId(), book.getId())) {
-            throw new ConflictEntityException(String.format("User '%s' already wrote review to the book '%s'", appUser.getEmail(), book.getTitle()));
+        if(reviewRepository.countByBookIdAndUserId(user.getId(), book.getId()) > 0) {
+            throw new ConflictEntityException(String.format("User '%s' already wrote review to the book '%s'", user.getEmail(), book.getTitle()));
         }
 
-        Review review = new Review(null, reviewDto.getText(), reviewDto.getRating(), LocalDateTime.now(), appUser, book);
+        Review review = new Review(null, reviewDto.getText(), reviewDto.getRating(), LocalDateTime.now(), user, book);
 
         log.info("Saving new review to book {}, with user {}, to the database.", review.getBook().getTitle(), review.getUser().getEmail());
         return reviewRepository.save(review);

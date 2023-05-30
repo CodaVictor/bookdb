@@ -52,7 +52,7 @@ public class GenreController {
             throws ConflictEntityException, ResourceNotFoundException {
         Genre genre = genreService.update(genreDto, genreId);
 
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/genres/{id}").toUriString());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/{id}").toUriString());
         return ResponseEntity.created(uri).body(genre.toDto());
     }
 

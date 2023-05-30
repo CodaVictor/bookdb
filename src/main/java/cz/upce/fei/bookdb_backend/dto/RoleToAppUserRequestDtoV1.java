@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -12,11 +13,11 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class RoleToAppUserRequestDtoV1 {
 
-    @NotNull
+    @NotBlank(message = "Username is required.")
     @Length(max = 320)
     private String userEmail;
 
-    @NotNull
+    @NotBlank(message = "Role name is required.")
     @Length(max = 255)
     private String roleName;
 }

@@ -33,12 +33,7 @@ public class Author {
     private String description;
 
     // Books-authors
-    @ManyToMany
-    @JoinTable(
-            name = "book_authors",
-            joinColumns = @JoinColumn(name = "author_id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id")
-    )
+    @ManyToMany(mappedBy = "authors", cascade = CascadeType.REMOVE)
     @ToString.Exclude
     @JsonIgnore
     private List<Book> books = Collections.emptyList();

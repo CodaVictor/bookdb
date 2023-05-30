@@ -57,7 +57,12 @@ public class Book {
     // -----------------------
 
     // Books-authors
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany
+    @JoinTable(
+            name = "book_authors",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
     @EqualsAndHashCode.Exclude
     private List<Author> authors = Collections.emptyList();
     // -----------------------
