@@ -1,17 +1,12 @@
 package cz.upce.fei.bookdb_backend.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.upce.fei.bookdb_backend.config.HashUtils;
-import cz.upce.fei.bookdb_backend.controller.BookController;
 import cz.upce.fei.bookdb_backend.domain.AppUser;
 import cz.upce.fei.bookdb_backend.domain.Book;
 import cz.upce.fei.bookdb_backend.domain.Review;
 import cz.upce.fei.bookdb_backend.dto.BookRequestDtoV1;
-import cz.upce.fei.bookdb_backend.dto.BookResponseDtoV1;
 import cz.upce.fei.bookdb_backend.dto.ReviewRequestDtoV1;
-import cz.upce.fei.bookdb_backend.exception.ConflictEntityException;
-import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.service.*;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,17 +29,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.web.client.match.JsonPathRequestMatchers;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
-
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 
 @WebMvcTest(controllers = BookController.class)
 @AutoConfigureMockMvc(addFilters = false)

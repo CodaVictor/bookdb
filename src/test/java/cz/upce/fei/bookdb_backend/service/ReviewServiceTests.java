@@ -5,7 +5,6 @@ import cz.upce.fei.bookdb_backend.domain.Book;
 import cz.upce.fei.bookdb_backend.domain.Review;
 import cz.upce.fei.bookdb_backend.dto.BookResponseDtoV1;
 import cz.upce.fei.bookdb_backend.dto.ReviewRequestDtoV1;
-import cz.upce.fei.bookdb_backend.dto.ReviewResponseDtoV1;
 import cz.upce.fei.bookdb_backend.exception.ConflictEntityException;
 import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.repository.AppUserRepository;
