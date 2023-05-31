@@ -9,9 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @SpringBootApplication
 public class BookdbBackendApplication {
 
-	// TODO: Readme.md - napsat do něj i jak se projekt spouští
-	// TODO: Jednotkové testy
-
 	public static void main(String[] args) {
 		SpringApplication.run(BookdbBackendApplication.class, args);
 	}

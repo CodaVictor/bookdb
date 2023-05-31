@@ -91,10 +91,10 @@ public class Book {
                 getPublicationDate(),
                 getPageCount(),
                 getDescription(),
-                getPublisher().toDto(),
-                getCategory().toDto(),
-                getGenre().toDto(),
-                getAuthors().stream().map(Author::toDto).collect(Collectors.toList()),
+                getPublisher() != null ? getPublisher().toDto() : null,
+                getCategory() != null ? getCategory().toDto() : null,
+                getGenre() != null ? getGenre().toDto() : null,
+                getAuthors() != null ? getAuthors().stream().map(Author::toDto).collect(Collectors.toList()) : null,
                 0,null
         );
     }

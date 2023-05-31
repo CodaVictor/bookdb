@@ -38,5 +38,5 @@ public class BookResponseDtoV1 {
     //
     private long reviewCount;
 
-    private Long rating;
+    private Float rating;
 }

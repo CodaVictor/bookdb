@@ -115,7 +115,7 @@ public class BookController {
     public ResponseEntity<BookResponseDtoV1> findById(@PathVariable Long bookId) throws ResourceNotFoundException {
         Book book = bookService.findById(bookId);
         long reviewCount = reviewService.getReviewCountOfBook(bookId);
-        Long avgRating = reviewService.getAvgRatingOfBook(bookId);
+        Float avgRating = reviewService.getAvgRatingOfBook(bookId);
 
         BookResponseDtoV1 bookDto = book.toDto();
         bookDto.setReviewCount(reviewCount);
