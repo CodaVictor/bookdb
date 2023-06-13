@@ -46,6 +46,11 @@ public class AppUserController {
         return ResponseEntity.ok().body(appUserService.getAllAppUsers());
     }
 
+    @PostMapping("/user/info")
+    public ResponseEntity<AppUser> getUser(@RequestBody String email) throws ResourceNotFoundException {
+        return ResponseEntity.ok().body(appUserService.findUserByEmailLookup(email));
+    }
+
     @PostMapping("/user/save")
     public ResponseEntity<AppUser> saveUser(@RequestBody AppUser user) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/save").toUriString());

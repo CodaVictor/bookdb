@@ -42,7 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(ServerPaths.LOGIN_PATH + "/**", ServerPaths.TOKEN_REFRESH_PATH + "/**")
                 .permitAll();
         // User and role
-        http.authorizeRequests().antMatchers(GET, ServerPaths.USERS_PATH).hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(GET, "/users").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(POST, ServerPaths.USER_PATH + "/info").hasAnyAuthority("ROLE_ADMIN", "ROLE_EDITOR", "ROLE_USER");
         http.authorizeRequests().antMatchers(POST, ServerPaths.USER_PATH + "/save/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(POST, ServerPaths.ROLE_PATH + "/**").hasAnyAuthority("ROLE_ADMIN");
 

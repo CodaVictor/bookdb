@@ -2,6 +2,7 @@ package cz.upce.fei.bookdb_backend.service;
 
 import cz.upce.fei.bookdb_backend.domain.AppUser;
 import cz.upce.fei.bookdb_backend.domain.Role;
+import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.repository.AppUserRepository;
 import cz.upce.fei.bookdb_backend.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +35,18 @@ public class AppUserService implements UserDetailsService {
         return appUserRepository.findByEmail(email);
     }
 
+    @Transactional(readOnly = true)
+    public AppUser findUserByEmailLookup(String email) throws ResourceNotFoundException {
+        log.info("Fetching user with email {}.", email);
+        AppUser appUser = appUserRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User doesn't exist."));
+
+        AppUser appUserLookup = new AppUser(appUser.getId(), appUser.getFirstName(), appUser.getLastName(),
+                appUser.getEmail(), null, null, null);
+
+        return appUserLookup;
+    }
+
+    @Transactional(readOnly = true)
     public List<AppUser> getAllAppUsers() {
         log.info("Fetching all users.");
         return appUserRepository.findAll();

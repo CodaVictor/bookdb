@@ -2,7 +2,7 @@ package cz.upce.fei.bookdb_backend.controller;
 
 import cz.upce.fei.bookdb_backend.domain.Book;
 import cz.upce.fei.bookdb_backend.dto.BookRequestDtoV1;
-import cz.upce.fei.bookdb_backend.dto.BookFilterParameters;
+import cz.upce.fei.bookdb_backend.dto.BookParameters;
 import cz.upce.fei.bookdb_backend.dto.BookResponseDtoV1;
 import cz.upce.fei.bookdb_backend.exception.ConflictEntityException;
 import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
@@ -41,7 +41,7 @@ public class BookController {
     public ResponseEntity<List<BookResponseDtoV1>> findAll(
             @RequestParam(required = false) @Min(1) @Max(Integer.MAX_VALUE) Integer page,
             @RequestParam(required = false) @Min(1) @Max(512) Integer pageSize,
-            @RequestBody(required = false) @Validated BookFilterParameters parameters) {
+            @Validated BookParameters parameters) {
         Specification<Book> specification = Specification.where(null);
         Integer currentPage = DefaultValues.DEFAULT_PAGE;
         Integer currentPageSize = DefaultValues.BOOK_DEFAULT_PAGE_SIZE;
@@ -68,27 +68,18 @@ public class BookController {
 
             // Filters
             // Category
-            if(parameters.getCategory() != null) {
-                specification.and(parameters.getCategory().stream()
-                        .map(categoryId -> BookSpecification.hasCategoryId(categoryId))
-                        .reduce((spec1, spec2) -> spec1.and(spec2))
-                        .orElse(null));
+            if(parameters.getCategory() != null && !parameters.getCategory().isEmpty()) {
+                specification = specification.and(BookSpecification.hasCategoryId(parameters.getCategory()));
             }
 
             // Genre
-            if(parameters.getGenre() != null) {
-                specification.and(parameters.getGenre().stream()
-                    .map(genreId -> BookSpecification.hasGenreId(genreId))
-                    .reduce((spec1, spec2) -> spec1.and(spec2))
-                    .orElse(null));
+            if(parameters.getGenre() != null && !parameters.getGenre().isEmpty()) {
+                specification = specification.and(BookSpecification.hasGenreId(parameters.getGenre()));
             }
 
             // Publisher
-            if(parameters.getPublisher() != null) {
-                specification.and(parameters.getPublisher().stream()
-                        .map(publisherId -> BookSpecification.hasPublisherId(publisherId))
-                        .reduce((spec1, spec2) -> spec1.and(spec2))
-                        .orElse(null));
+            if(parameters.getPublisher() != null && !parameters.getPublisher().isEmpty()) {
+                specification = specification.and(BookSpecification.hasPublisherId(parameters.getPublisher()));
             }
         }
 
@@ -101,8 +92,8 @@ public class BookController {
 
         // Ideální by bylo vše provést v jednom dotazu, ale nevím jak
         responseBooks.forEach(bookDto -> {
-            reviewService.getReviewCountOfBook(bookDto.getId());
-            reviewService.getAvgRatingOfBook(bookDto.getId());
+            bookDto.setReviewCount(reviewService.getReviewCountOfBook(bookDto.getId()));
+            bookDto.setRating(reviewService.getAvgRatingOfBook(bookDto.getId()));
         });
 
         return ResponseEntity.ok()

@@ -10,8 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookFilterParameters {
-
+public class BookParameters {
 
     private String orderBy;
     @Pattern(regexp = "ASC|DESC", message = "The value must be 'ASC' or 'DESC'.")
