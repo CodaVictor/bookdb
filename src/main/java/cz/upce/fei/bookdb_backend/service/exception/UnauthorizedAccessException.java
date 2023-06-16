@@ -1,15 +1,15 @@
-package cz.upce.fei.bookdb_backend.exception;
+package cz.upce.fei.bookdb_backend.service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Not found")
-public class ResourceNotFoundException extends Exception {
+@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+public class UnauthorizedAccessException extends Exception {
 
-    public ResourceNotFoundException() {
+    public UnauthorizedAccessException() {
     }
 
-    public ResourceNotFoundException(String message) {
+    public UnauthorizedAccessException(String message) {
         super(message);
     }
 

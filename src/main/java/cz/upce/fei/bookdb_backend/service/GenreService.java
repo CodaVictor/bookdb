@@ -2,9 +2,9 @@ package cz.upce.fei.bookdb_backend.service;
 
 import cz.upce.fei.bookdb_backend.domain.Genre;
 import cz.upce.fei.bookdb_backend.dto.GenreRequestDtoV1;
-import cz.upce.fei.bookdb_backend.exception.ConflictEntityException;
-import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.repository.GenreRepository;
+import cz.upce.fei.bookdb_backend.service.exception.ConflictEntityException;
+import cz.upce.fei.bookdb_backend.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

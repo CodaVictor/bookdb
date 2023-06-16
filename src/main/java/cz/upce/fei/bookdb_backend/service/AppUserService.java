@@ -1,10 +1,13 @@
 package cz.upce.fei.bookdb_backend.service;
 
+import cz.upce.fei.bookdb_backend.config.JwtTokenUtil;
 import cz.upce.fei.bookdb_backend.domain.AppUser;
 import cz.upce.fei.bookdb_backend.domain.Role;
-import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
+import cz.upce.fei.bookdb_backend.dto.AppUserRequestDtoV1;
 import cz.upce.fei.bookdb_backend.repository.AppUserRepository;
 import cz.upce.fei.bookdb_backend.repository.RoleRepository;
+import cz.upce.fei.bookdb_backend.service.exception.ConflictEntityException;
+import cz.upce.fei.bookdb_backend.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,7 +17,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +31,7 @@ public class AppUserService implements UserDetailsService {
     private final AppUserRepository appUserRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenUtil jwtTokenUtil;
 
     public Optional<AppUser> findUserByEmail(String email) {
         log.info("Fetching user with email {}.", email);
@@ -73,6 +76,70 @@ public class AppUserService implements UserDetailsService {
     public void deleteUser(String email) {
         log.info("Deleting user with email {}.", email);
         appUserRepository.deleteAppUserByEmail(email);
+    }
+
+    /* #DELETE
+    public Map<String, Object> loginUser(String email, String password) {
+        Map<String, Object> responseMap = new HashMap<>();
+        try {
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password)
+            );
+            if (auth.isAuthenticated()) {
+                log.info("Logged In.");
+                UserDetails userDetails = loadUserByUsername(email);
+                String token = jwtTokenUtil.generateJwtToken(userDetails);
+                responseMap.put("error", false);
+                responseMap.put("message", "Logged In.");
+                responseMap.put("token", token);
+                responseMap.put("statusCode" , HttpStatus.OK);
+                return responseMap;
+            } else {
+                responseMap.put("error", true);
+                responseMap.put("message", "Invalid Credentials.");
+                responseMap.put("statusCode" , HttpStatus.UNAUTHORIZED);
+                return responseMap;
+            }
+        } catch (DisabledException e) {
+            e.printStackTrace();
+            responseMap.put("error", true);
+            responseMap.put("message", "User is disabled.");
+            responseMap.put("statusCode" , HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseMap;
+        } catch (BadCredentialsException e) {
+            responseMap.put("error", true);
+            responseMap.put("message", "Invalid Credentials.");
+            responseMap.put("statusCode" , HttpStatus.UNAUTHORIZED);
+            return responseMap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseMap.put("error", true);
+            responseMap.put("message", "Something went wrong.");
+            responseMap.put("statusCode" , HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseMap;
+        }
+    }
+    */
+
+    public AppUser registerUser(AppUserRequestDtoV1 appUserDto) throws ConflictEntityException {
+        boolean isExistingUser = appUserRepository.findByEmail(appUserDto.getEmail()).isPresent();
+
+        if (isExistingUser) {
+            throw new ConflictEntityException("User already exists.");
+        }
+
+        AppUser appUser = new AppUser();
+        appUser.setFirstName(appUserDto.getFirstName());
+        appUser.setLastName(appUserDto.getLastName());
+        appUser.setEmail(appUserDto.getEmail());
+        appUser.setPassword(passwordEncoder.encode(appUserDto.getPassword()));
+
+        Role role = roleRepository.findByName("ROLE_USER");
+        appUser.getRoles().add(role);
+
+        appUserRepository.save(appUser);
+
+        return appUser;
     }
 
     // Zabezpečení uživatele

@@ -1,15 +1,15 @@
-package cz.upce.fei.bookdb_backend.exception;
+package cz.upce.fei.bookdb_backend.service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-public class UnauthorizedAccessException extends Exception {
+@ResponseStatus(value = HttpStatus.CONFLICT)
+public class ConflictEntityException extends Exception {
 
-    public UnauthorizedAccessException() {
+    public ConflictEntityException() {
     }
 
-    public UnauthorizedAccessException(String message) {
+    public ConflictEntityException(String message) {
         super(message);
     }
 

@@ -2,16 +2,15 @@ package cz.upce.fei.bookdb_backend.service;
 
 import cz.upce.fei.bookdb_backend.domain.Category;
 import cz.upce.fei.bookdb_backend.dto.CategoryRequestDtoV1;
-import cz.upce.fei.bookdb_backend.exception.ConflictEntityException;
-import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.repository.CategoryRepository;
+import cz.upce.fei.bookdb_backend.service.exception.ConflictEntityException;
+import cz.upce.fei.bookdb_backend.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

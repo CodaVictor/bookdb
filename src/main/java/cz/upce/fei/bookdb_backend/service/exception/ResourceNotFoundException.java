@@ -1,15 +1,15 @@
-package cz.upce.fei.bookdb_backend.exception;
+package cz.upce.fei.bookdb_backend.service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.CONFLICT)
-public class ConflictEntityException extends Exception {
+@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Not found")
+public class ResourceNotFoundException extends Exception {
 
-    public ConflictEntityException() {
+    public ResourceNotFoundException() {
     }
 
-    public ConflictEntityException(String message) {
+    public ResourceNotFoundException(String message) {
         super(message);
     }
 

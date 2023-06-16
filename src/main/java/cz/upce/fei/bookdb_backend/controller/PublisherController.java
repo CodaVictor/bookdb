@@ -3,10 +3,9 @@ package cz.upce.fei.bookdb_backend.controller;
 import cz.upce.fei.bookdb_backend.domain.Publisher;
 import cz.upce.fei.bookdb_backend.dto.PublisherRequestDtoV1;
 import cz.upce.fei.bookdb_backend.dto.PublisherResponseDtoV1;
-import cz.upce.fei.bookdb_backend.exception.ConflictEntityException;
-import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
 import cz.upce.fei.bookdb_backend.service.PublisherService;
-
+import cz.upce.fei.bookdb_backend.service.exception.ConflictEntityException;
+import cz.upce.fei.bookdb_backend.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

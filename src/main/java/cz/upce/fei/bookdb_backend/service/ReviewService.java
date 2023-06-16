@@ -4,23 +4,20 @@ import cz.upce.fei.bookdb_backend.domain.AppUser;
 import cz.upce.fei.bookdb_backend.domain.Book;
 import cz.upce.fei.bookdb_backend.domain.Review;
 import cz.upce.fei.bookdb_backend.dto.ReviewRequestDtoV1;
-import cz.upce.fei.bookdb_backend.exception.ConflictEntityException;
-import cz.upce.fei.bookdb_backend.exception.ResourceNotFoundException;
-import cz.upce.fei.bookdb_backend.exception.UnauthorizedAccessException;
 import cz.upce.fei.bookdb_backend.repository.AppUserRepository;
 import cz.upce.fei.bookdb_backend.repository.BookRepository;
 import cz.upce.fei.bookdb_backend.repository.ReviewRepository;
+import cz.upce.fei.bookdb_backend.service.exception.ConflictEntityException;
+import cz.upce.fei.bookdb_backend.service.exception.ResourceNotFoundException;
+import cz.upce.fei.bookdb_backend.service.exception.UnauthorizedAccessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 
 @Service

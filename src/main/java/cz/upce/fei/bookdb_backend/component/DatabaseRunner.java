@@ -1,9 +1,5 @@
 package cz.upce.fei.bookdb_backend.component;
 
-import cz.upce.fei.bookdb_backend.domain.AppUser;
-import cz.upce.fei.bookdb_backend.domain.Book;
-import cz.upce.fei.bookdb_backend.domain.Role;
-import cz.upce.fei.bookdb_backend.dto.*;
 import cz.upce.fei.bookdb_backend.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,12 +7,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Component
 @Slf4j

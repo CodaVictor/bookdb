@@ -1,7 +1,6 @@
 package cz.upce.fei.bookdb_backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.upce.fei.bookdb_backend.config.HashUtils;
 import cz.upce.fei.bookdb_backend.domain.AppUser;
 import cz.upce.fei.bookdb_backend.domain.Book;
 import cz.upce.fei.bookdb_backend.domain.Review;
@@ -50,8 +49,6 @@ public class BookControllerTests {
 	private UserDetailsService userDetailsService;
 	@MockBean
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	@MockBean
-	private HashUtils hashUtils;
 	@MockBean
 	private ReviewService reviewService;
 	@MockBean
