@@ -38,7 +38,7 @@ public class BookController {
     private final AuthorService authorService;
 
     @GetMapping("")
-    public ResponseEntity<List<BookResponseDtoV1>> findAll(
+    public ResponseEntity<Page<BookResponseDtoV1>> findAll(
             @RequestParam(required = false) @Min(1) @Max(Integer.MAX_VALUE) Integer page,
             @RequestParam(required = false) @Min(1) @Max(512) Integer pageSize,
             @Validated BookParameters parameters) {
@@ -84,11 +84,14 @@ public class BookController {
         }
 
         booksPage = bookService.findAllBy(specification, pageable);
+        Page<BookResponseDtoV1> responseBooks = booksPage.map(Book::toDto);
 
+        /*
         List<BookResponseDtoV1> responseBooks = booksPage.getContent()
                 .stream()
                 .map(Book::toDto)
                 .toList();
+        */
 
         // Ideální by bylo vše provést v jednom dotazu, ale nevím jak
         responseBooks.forEach(bookDto -> {
@@ -97,8 +100,8 @@ public class BookController {
         });
 
         return ResponseEntity.ok()
-                .header("X-Total-Count", String.valueOf(booksPage.getTotalElements()))
-                .header("X-Total-Pages", String.valueOf(booksPage.getTotalPages()))
+                //.header("X-Total-Count", String.valueOf(booksPage.getTotalElements()))
+                //.header("X-Total-Pages", String.valueOf(booksPage.getTotalPages()))
                 .body(responseBooks);
     }
 
